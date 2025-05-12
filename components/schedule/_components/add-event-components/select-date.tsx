@@ -4,6 +4,8 @@ import { EventFormData } from "@/types";
 import { parseDate, CalendarDate, Time } from "@internationalized/date";
 import { DateRangePicker } from "@nextui-org/date-picker";
 import { TimeInput } from "@nextui-org/date-input";
+import { ZonedDateTime } from "@internationalized/date";
+
 
 import React, { useEffect, useState } from "react";
 import { UseFormSetValue } from "react-hook-form";
@@ -70,34 +72,43 @@ export default function SelectDate({
   return (
     <div>
       <div className="w-full flex gap-4 max-w-full flex-wrap">
-        <DateRangePicker
-          label="Stay duration"
-          isRequired
-          value={{ start: dateState.startDate, end: dateState.endDate }}
-          className="w-full"
-          onChange={(value) => {
-            const start = value?.start;
-            const end = value?.end;
-
-            const startDate = new Date(
-              start?.year || 0,
-              (start?.month || 1) - 1,
-              start?.day || 1
-            );
-
-            const endDate = new Date(
-              end?.year || 0,
-              (end?.month || 1) - 1,
-              end?.day || 1
-            );
-
-            setDateState({
-              ...dateState,
-              startDate: parseDate(getFormattedDate(startDate)),
-              endDate: parseDate(getFormattedDate(endDate)),
-            });
-          }}
-        />
+      <DateRangePicker
+  label="Stay duration"
+  isRequired
+  value={{
+    start: ZonedDateTime.from({
+      // take your CalendarDate fields and a time zone
+      year: dateState.startDate.year,
+      month: dateState.startDate.month,
+      day: dateState.startDate.day,
+      hour: 0,
+      minute: 0,
+      second: 0,
+      timeZone: "UTC"
+    }),
+    end: ZonedDateTime.from({
+      year: dateState.endDate.year,
+      month: dateState.endDate.month,
+      day: dateState.endDate.day,
+      hour: 0,
+      minute: 0,
+      second: 0,
+      timeZone: "UTC"
+    })
+  }}
+  onChange={(range) => {
+    // range.start/end will now be ZonedDateTime
+    if (!range) return;
+    const { start, end } = range;
+    // convert back into CalendarDate for your state
+    setDateState({
+      ...dateState,
+      startDate: start.toCalendarDate(),
+      endDate: end.toCalendarDate()
+    });
+  }}
+  className="w-full"
+/>
 
         <div className="flex flex-wrap gap-4">
           <TimeInput
