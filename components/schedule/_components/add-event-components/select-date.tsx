@@ -1,7 +1,7 @@
 "use client";
 
 import { EventFormData } from "@/types";
-import { parseDate, CalendarDate, Time } from "@internationalized/date";
+import { parseDate,toZoned, CalendarDate, Time } from "@internationalized/date";
 import { DateRangePicker } from "@nextui-org/date-picker";
 import { TimeInput } from "@nextui-org/date-input";
 import { ZonedDateTime } from "@internationalized/date";
@@ -76,35 +76,25 @@ export default function SelectDate({
   label="Stay duration"
   isRequired
   value={{
-    start: ZonedDateTime.from({
-      // take your CalendarDate fields and a time zone
-      year: dateState.startDate.year,
-      month: dateState.startDate.month,
-      day: dateState.startDate.day,
-      hour: 0,
-      minute: 0,
-      second: 0,
-      timeZone: "UTC"
-    }),
-    end: ZonedDateTime.from({
-      year: dateState.endDate.year,
-      month: dateState.endDate.month,
-      day: dateState.endDate.day,
-      hour: 0,
-      minute: 0,
-      second: 0,
-      timeZone: "UTC"
-    })
+    start: toZoned(dateState.startDate, "UTC"),  // CalendarDate → ZonedDateTime
+    end:   toZoned(dateState.endDate,   "UTC")
   }}
   onChange={(range) => {
-    // range.start/end will now be ZonedDateTime
     if (!range) return;
-    const { start, end } = range;
-    // convert back into CalendarDate for your state
+    // range.start / range.end are now ZonedDateTime
+    // strip back to CalendarDate by pulling out year/month/day
     setDateState({
       ...dateState,
-      startDate: start.toCalendarDate(),
-      endDate: end.toCalendarDate()
+      startDate: new CalendarDate(
+        range.start.year,
+        range.start.month,
+        range.start.day
+      ),
+      endDate:   new CalendarDate(
+        range.end.year,
+        range.end.month,
+        range.end.day
+      )
     });
   }}
   className="w-full"
