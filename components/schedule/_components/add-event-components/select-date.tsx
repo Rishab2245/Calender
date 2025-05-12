@@ -104,6 +104,7 @@ export default function SelectDate({
             label="Start Time"
             defaultValue={dateState?.startTime}
             onChange={(e: Time | null) => {
+              if (!e) return; 
               setDateState({
                 ...dateState,
                 startTime: e,
@@ -115,6 +116,7 @@ export default function SelectDate({
             label="End Time"
             defaultValue={dateState?.endTime}
             onChange={(e: Time | null) => {
+              if (!e) return; 
               setDateState({
                 ...dateState,
                 endTime: e,
