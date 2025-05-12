@@ -4,8 +4,6 @@ import { EventFormData } from "@/types";
 import { parseDate,toZoned, CalendarDate, Time } from "@internationalized/date";
 import { DateRangePicker } from "@nextui-org/date-picker";
 import { TimeInput } from "@nextui-org/date-input";
-import { ZonedDateTime } from "@internationalized/date";
-
 
 import React, { useEffect, useState } from "react";
 import { UseFormSetValue } from "react-hook-form";
